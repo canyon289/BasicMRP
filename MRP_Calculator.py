@@ -12,7 +12,6 @@ def part_mrp(part_group):
 
     returns: Dataframe with Planned Receipt and Releases and error messages
     '''
-    pdb.set_trace()
     part_group.reset_index(level=0, drop=True, inplace=True)
     # Picking arbitrary values for now
     part_lt = 10
@@ -34,15 +33,17 @@ def part_mrp(part_group):
         if net_requirement > 0:
             # Determine quantity needed for order
             po_receipt = math.ceil(net_requirement/order_qty) * order_qty
+            
             part_week["POReceipt"] = po_receipt
-
+            part_week["NR"] = net_requirement
+            
             # Plan Order week
             receipt_week = i - part_lt
             if receipt_week <= 0:
                 print("Exception message: PO Release required in the past")
                 receipt_week = 0
 
-            part_group.ix["PORelease", receipt_week] = po_receipt
+            part_group.ix["PORelease", receipt_week] += po_receipt
 
         part_week["PA"] = previous_available + po_receipt - part_week["GR"]
 
