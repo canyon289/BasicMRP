@@ -1,9 +1,21 @@
 '''
-Functions with run MRP Logic
+Basic MRP System that uses Pandas and a spreadsheet software as a interface
 '''
 
+import pandas as pd
+import numpy as np
+from datetime import date
 import math
-import pdb
+
+
+def calc_mrp(mrp_object):
+    '''
+    Runs MRP Calculations
+    '''
+
+    mrp_object.mrp_plan = mrp_object.mrp_table.groupby(level=0).apply(part_mrp)
+
+    return mrp_object
 
 
 def part_mrp(part_group):
@@ -33,10 +45,10 @@ def part_mrp(part_group):
         if net_requirement > 0:
             # Determine quantity needed for order
             po_receipt = math.ceil(net_requirement/order_qty) * order_qty
-            
+
             part_week["POReceipt"] = po_receipt
             part_week["NR"] = net_requirement
-            
+
             # Plan Order week
             receipt_week = i - part_lt
             if receipt_week <= 0:

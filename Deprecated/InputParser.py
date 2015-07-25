@@ -16,10 +16,8 @@ def df_parser(input_df, date_col, input_type):
     returns: Properly mutliindexed dataframe ready for updating MRP table
     '''
     period_type = "W-SUN"
-    #ipdb.set_trace()
     input_df[date_col]  = pd.to_datetime(input_df[date_col])
     input_df.set_index(date_col, inplace=True)
-    ipdb.set_trace()
     input_df = input_df.to_period(period_type).reset_index()
     input_df = input_df.groupby(by = ["Part Number"] + [date_col]).sum()
     input_df[input_type] = input_type
@@ -43,3 +41,5 @@ def test_gen_grossrequirements():
     return df_parser(p, "Week", "GR")
     
 df = test_gen_grossrequirements()
+
+
