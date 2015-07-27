@@ -6,28 +6,34 @@ import pandas as pd
 import numpy as np
 from datetime import date
 import math
+import pdb
 
 
 def calc_mrp(mrp_object):
     '''
     Runs MRP Calculations
     '''
-
-    mrp_object.mrp_plan = mrp_object.mrp_table.groupby(level=0).apply(part_mrp)
+    item_attr = mrp_object.mrp_inputs.item_attr
+    mrp_object.mrp_plan = mrp_object.mrp_table.groupby(level=0).apply(part_mrp, item_attr = mrp_object.mrp_inputs.item_attr)
 
     return mrp_object
 
 
-def part_mrp(part_group):
+def part_mrp(part_group, item_attr):
     '''
     Takes part groups from MRP dataframe and runs MRP
 
     returns: Dataframe with Planned Receipt and Releases and error messages
     '''
+    # Remove part number index
+    part_num = part_group.index.get_level_values(0)[0]
     part_group.reset_index(level=0, drop=True, inplace=True)
-    # Picking arbitrary values for now
-    part_lt = 10
-    order_qty = 10
+    
+    # Get Item attributes
+    part_lt = item_attr.loc[part_num, "Lead Time (Weeks)"]
+    order_qty = item_attr.loc[part_num, "Order Quantity"]
+    
+    pdb.set_trace()
 
     for i, week in enumerate(part_group.columns):
         # Skip Week 0 / Current week
