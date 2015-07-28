@@ -12,8 +12,8 @@ from datetime import date
 
 class google_docs_input:
     '''
-    Authorizes with Google Docs and contains methods to return inventory, gross requirements
-    and lead time dataframes
+    Authorizes with Google Docs and contains methods to return inventory,
+    gross requirements and lead time dataframes
 
     returns : object with formatted dataframes
     '''
@@ -33,7 +33,8 @@ class google_docs_input:
 
     def get_dataframes(self):
         '''
-       Run methods which read Google Sheets and return formatted dataframes as attributes
+       Run methods which read Google Sheets and
+       return formatted dataframes as attributes
 
        returns: self
         '''
