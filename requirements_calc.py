@@ -13,8 +13,8 @@ def calc_mrp(mrp_object):
     '''
     Runs MRP Calculations
     '''
-    item_attr = mrp_object.mrp_inputs.item_attr
-    mrp_object.mrp_plan = mrp_object.mrp_table.groupby(level=0).apply(part_mrp, item_attr = mrp_object.mrp_inputs.item_attr)
+    #Run MRP
+    mrp_object.mrp_plan = mrp_object.mrp_table.groupby(level=0).apply(part_mrp, item_attr = mrp_object.inputs.item_attr_df)
 
     return mrp_object
 
@@ -28,12 +28,10 @@ def part_mrp(part_group, item_attr):
     # Remove part number index
     part_num = part_group.index.get_level_values(0)[0]
     part_group.reset_index(level=0, drop=True, inplace=True)
-    
+
     # Get Item attributes
     part_lt = item_attr.loc[part_num, "Lead Time (Weeks)"]
     order_qty = item_attr.loc[part_num, "Order Quantity"]
-    
-    pdb.set_trace()
 
     for i, week in enumerate(part_group.columns):
         # Skip Week 0 / Current week
@@ -62,7 +60,7 @@ def part_mrp(part_group, item_attr):
                 receipt_week = 0
 
             part_group.ix["PORelease", receipt_week] += po_receipt
-
-        part_week["PA"] = previous_available + po_receipt - part_week["GR"]
+        #pdb.set_trace()
+        part_week["PA"] = previous_available + po_receipt + part_week["SR"]- part_week["GR"]
 
     return part_group

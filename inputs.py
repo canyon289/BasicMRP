@@ -37,13 +37,13 @@ class google_docs_input:
        return formatted dataframes as attributes
 
        returns: self
-        '''
+       '''
 
         self.sheets_item_attribute()
         self.sheets_read_gr()
         self.sheets_read_inventory()
         self.sheets_read_scheduled_receipts()
-        self.sheets_read_bom()
+        self.sheets_read_scheduled_receipts()
         return self
 
     def _read_sheet(self, sheet_name, input_type=None, date_col=None, format=True):
@@ -90,6 +90,12 @@ class google_docs_input:
         input_df.columns = input_df.columns.droplevel()
 
         return input_df
+        
+    def explode_requirements(self):
+        '''
+        Using Top Level demand and BOM explodes the requirements for the individual items
+        returns : Exploded Dataframe of dated demand
+        '''
 
     def sheets_read_bom(self):
         '''
@@ -109,7 +115,21 @@ class google_docs_input:
         '''
         Read Gross Requirements Spreadsheet of Google docs
         '''
-        self.gr_df = self._read_sheet("Gross Requirements", "GR", "Date Needed")
+
+        toplevel_gr = self.spreadsheet.worksheet("Gross Requirements").get_all_values()
+        headers = toplevel_gr.pop(0)
+        bom = self.sheets_read_bom()
+        
+        exploded_req = pd.DataFrame()
+    
+        for row in toplevel_gr:
+            row_dict= dict(zip(headers,row))
+            exploded_bom = bom * int(row_dict["Demand"])
+            exploded_bom["Due Date"] = row_dict["Date Needed"]
+            exploded_req= exploded_req.append(exploded_bom)
+            
+        exploded_req.reset_index(inplace = True)
+        self.gr_df = self.format_dataframe(exploded_req, "GR", "Due Date")
         return self.gr_df
 
     def sheets_read_scheduled_receipts(self):

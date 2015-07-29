@@ -25,8 +25,7 @@ class mrp:
         Refactor this at a future date
         '''
         items = self.inputs.bom_df.index
-        assert items.isin(self.inputs.item_attr_df.index).all(),
-                "Ensure all items have attributes"
+        assert items.isin(self.inputs.item_attr_df.index).all(), "Ensure all items have attributes"
 
         return items
 
@@ -55,15 +54,19 @@ class mrp:
 
     def update_mrp_table(self):
         '''
-        updates mrp table with inputs
+        Updates mrp table with inputs
+        
+        returns : self
         '''
 
         self.mrp_table.update(self.inputs.inventory_df)
         self.mrp_table.update(self.inputs.gr_df)
-        # Add Planned Receipts Later
+        self.mrp_table.update(self.inputs.sr_df)
 
         return self
 
 if __name__ == "__main__":
     i = inputs.google_docs_input('MRPTest-eda1f9edd61a.json', "MRP_Input")
-    m = mrp(i).gen_mrp_table()
+    m = mrp(i)
+    z = m.gen_mrp_table().update_mrp_table()
+    a = requirements_calc.calc_mrp(z)
