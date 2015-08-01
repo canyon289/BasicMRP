@@ -3,6 +3,7 @@ import requirements_calc
 import pandas as pd
 from datetime import date
 import pdb
+import IPython
 
 
 class mrp:
@@ -64,9 +65,16 @@ class mrp:
         self.mrp_table.update(self.inputs.sr_df)
 
         return self
+    
+    def calc_mrp(self):
+        '''Runs mrp using mrp calculator'''
+        return requirements_calc.calc_mrp(self)
 
 if __name__ == "__main__":
+    # IPython.embed()
     i = inputs.google_docs_input('MRPTest-eda1f9edd61a.json', "MRP_Input")
     m = mrp(i)
-    z = m.gen_mrp_table().update_mrp_table()
-    a = requirements_calc.calc_mrp(z)
+    mrp_update = m.update_mrp_table()
+    plan = mrp_update.calc_mrp()
+    planned = plan.mrp_plan.xs("PORelease", level =1).stack()
+    print(planned)
