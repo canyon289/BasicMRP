@@ -71,10 +71,12 @@ class mrp:
         return requirements_calc.calc_mrp(self)
 
 if __name__ == "__main__":
-    # IPython.embed()
     i = inputs.google_docs_input('MRPTest-eda1f9edd61a.json', "MRP_Input")
     m = mrp(i)
     mrp_update = m.update_mrp_table()
     plan = mrp_update.calc_mrp()
+    plan.mrp_plan.to_excel("FullMRPPlan.xls")
     planned = plan.mrp_plan.xs("PORelease", level =1).stack()
+    # IPython.embed()
+    planned.to_csv("ScheduledReceipts.csv")
     print(planned)
